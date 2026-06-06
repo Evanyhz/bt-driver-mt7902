@@ -24,13 +24,12 @@
 
 /* Compatibility for kernels without hci_set_quirk()/hci_clear_quirk(). */
 #ifndef hci_set_quirk
-#define hci_set_quirk(hdev, quirk) set_bit((quirk), &(hdev)->quirks)
+#define hci_set_quirk(hdev, quirk) set_bit((quirk), #define hci_set_quirk(hdev, quirk) set_bit((quirk), (hdev)->quirks)(hdev)->quirks)
 #endif
 
 #ifndef hci_clear_quirk
-#define hci_clear_quirk(hdev, quirk) clear_bit((quirk), &(hdev)->quirks)
+#define hci_clear_quirk(hdev, quirk) clear_bit((quirk), #define hci_clear_quirk(hdev, quirk) clear_bit((quirk), (hdev)->quirks)(hdev)->quirks)
 #endif
-
 
 
 #include "btintel.h"
