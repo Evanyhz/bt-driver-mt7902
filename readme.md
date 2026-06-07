@@ -21,6 +21,64 @@ Wi-Fi PCI ID：14c3:7902
 Subsystem：AzureWave 1a3b:6040
 蓝牙 USB ID：13d3:3596
 ```
+# 新增：
+## DKMS 安装
+
+当前推荐使用 DKMS 管理 `mt7902e` 模块。这样内核升级后，系统会自动尝试重新编译并安装驱动。
+
+### 安装依赖
+
+```bash
+sudo apt update
+sudo apt install -y dkms build-essential linux-headers-$(uname -r)
+```
+
+### 安装 DKMS
+
+```bash
+sudo rm -rf /usr/src/mt7902e-wifi-1.0
+sudo mkdir -p /usr/src/mt7902e-wifi-1.0
+sudo cp -a . /usr/src/mt7902e-wifi-1.0/
+
+sudo dkms remove mt7902e-wifi/1.0 --all 2>/dev/null || true
+sudo dkms add -m mt7902e-wifi -v 1.0
+sudo dkms build -m mt7902e-wifi -v 1.0
+sudo dkms install -m mt7902e-wifi -v 1.0
+
+sudo make install_fw
+sudo depmod -a
+sudo update-initramfs -u -k all
+sudo reboot
+```
+
+### 验证
+
+```bash
+dkms status | grep mt7902e-wifi
+modinfo -n mt7902e
+lspci -nnk -d 14c3:7902
+nmcli device status
+```
+
+正常应看到：
+
+```text
+mt7902e-wifi/1.0, <kernel>, x86_64: installed
+Kernel driver in use: mt7902e
+wlp8s0    wifi
+```
+
+### 内核升级后
+
+如果内核升级后 Wi-Fi 没有自动恢复，执行：
+
+```bash
+sudo dkms autoinstall
+sudo depmod -a
+sudo update-initramfs -u -k all
+sudo reboot
+```
+
 
 ---
 
